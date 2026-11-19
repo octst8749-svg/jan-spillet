@@ -257,14 +257,6 @@
       ctx.rotate(Math.sin(t * 0.28) * 0.16 * e);
       drawFace(foeImg, '👹', 0, 0, size, foeCut);
       ctx.restore();
-      if (t > 45) {
-        ctx.save(); ctx.globalAlpha = Math.min(1, (t - 45) / 15);
-        ctx.font = 'bold 54px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.translate(W / 2, H * 0.14); ctx.rotate(-0.08 + Math.sin(t * 0.3) * 0.04);
-        ctx.lineWidth = 9; ctx.strokeStyle = '#000'; ctx.strokeText('FANGET!', 0, 0);
-        ctx.fillStyle = '#ffd23f'; ctx.fillText('FANGET!', 0, 0);
-        ctx.restore();
-      }
     }
     if (flash > 0) { ctx.fillStyle = 'rgba(255,0,0,' + flash / 30 + ')'; ctx.fillRect(0, 0, W, H); flash--; }
   }
