@@ -153,10 +153,15 @@
       o.connect(g); g.connect(a.destination); o.start(st); o.stop(st + .22);
     });
   }
-  function end() {
+  let dying = null;
+  function end(f) {
     running = false;
     if (score > best) { best = score; try { localStorage.setItem('pf_best', best); } catch (e) {} }
     updateHud();
+    dying = { t: 0, x: f ? f.x : W / 2, y: f ? f.y : H / 2 };
+  }
+  function showMenu() {
+    dying = null;
     menu.classList.remove('hidden');
     const h = menu.querySelector('h1'); h.textContent = '💥 Game over – ' + score + ' point'; h.classList.remove('hidden');
     $('start').textContent = 'Spil igen';
@@ -201,7 +206,7 @@
     foes = foes.filter(f => {
       if (player.inv === 0 && Math.hypot(f.x - player.x, f.y - player.y) < f.r + player.r - 10) {
         lives--; player.inv = 90; shake = 18; flash = 12; playHit(); updateHud();
-        if (lives <= 0) end();
+        if (lives <= 0) end(f);
         return false;
       }
       return f.y < H + 60;
@@ -242,9 +247,33 @@
     popups.forEach(p => { ctx.globalAlpha = Math.min(1, p.life / 25); ctx.lineWidth = 4; ctx.strokeStyle = '#000a'; ctx.strokeText(p.text, p.x, p.y); ctx.fillStyle = '#ff5a5a'; ctx.fillText(p.text, p.x, p.y); });
     ctx.globalAlpha = 1;
     ctx.restore();
+    if (dying) {
+      const t = dying.t, p = Math.min(1, t / 55), e = 1 - Math.pow(1 - p, 3);
+      ctx.fillStyle = 'rgba(0,0,0,' + (0.55 * e) + ')'; ctx.fillRect(0, 0, W, H);
+      const size = 74 + (Math.max(W, H) * 1.25 - 74) * e + (p >= 1 ? Math.sin(t * 0.35) * 14 : 0);
+      const cx = dying.x + (W / 2 - dying.x) * e, cy = dying.y + (H * 0.48 - dying.y) * e;
+      ctx.save();
+      ctx.translate(cx + (p >= 1 ? Math.sin(t * 1.7) * 6 : 0), cy);
+      ctx.rotate(Math.sin(t * 0.28) * 0.16 * e);
+      drawFace(foeImg, '👹', 0, 0, size, foeCut);
+      ctx.restore();
+      if (t > 45) {
+        ctx.save(); ctx.globalAlpha = Math.min(1, (t - 45) / 15);
+        ctx.font = 'bold 54px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.translate(W / 2, H * 0.14); ctx.rotate(-0.08 + Math.sin(t * 0.3) * 0.04);
+        ctx.lineWidth = 9; ctx.strokeStyle = '#000'; ctx.strokeText('FANGET!', 0, 0);
+        ctx.fillStyle = '#ffd23f'; ctx.fillText('FANGET!', 0, 0);
+        ctx.restore();
+      }
+    }
     if (flash > 0) { ctx.fillStyle = 'rgba(255,0,0,' + flash / 30 + ')'; ctx.fillRect(0, 0, W, H); flash--; }
   }
-  function loop() { if (running) step(); draw(); requestAnimationFrame(loop); }
+  function loop() {
+    if (running) step();
+    draw();
+    if (dying && ++dying.t > 130) showMenu();
+    requestAnimationFrame(loop);
+  }
 
   // ---------- Input ----------
   function setTarget(clientX, clientY) {
