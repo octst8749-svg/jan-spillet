@@ -250,11 +250,11 @@
     if (dying) {
       const t = dying.t, p = Math.min(1, t / 55), e = 1 - Math.pow(1 - p, 3);
       ctx.fillStyle = 'rgba(0,0,0,' + (0.55 * e) + ')'; ctx.fillRect(0, 0, W, H);
-      const size = 74 + (Math.max(W, H) * 1.25 - 74) * e + (p >= 1 ? Math.sin(t * 0.35) * 14 : 0);
+      const size = 74 + (Math.max(W, H) * 1.25 - 74) * e;
       const cx = dying.x + (W / 2 - dying.x) * e, cy = dying.y + (H * 0.48 - dying.y) * e;
       ctx.save();
       ctx.translate(cx, cy);
-      ctx.rotate(Math.sin(t * 0.28) * 0.16 * e);
+      ctx.rotate(Math.sin(t * 0.28) * 0.2 * (1 - p) * Math.min(1, t / 10));
       drawFace(foeImg, '👹', 0, 0, size, foeCut);
       ctx.restore();
     }
