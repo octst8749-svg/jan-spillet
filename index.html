@@ -253,7 +253,7 @@
       const size = 74 + (Math.max(W, H) * 1.25 - 74) * e + (p >= 1 ? Math.sin(t * 0.35) * 14 : 0);
       const cx = dying.x + (W / 2 - dying.x) * e, cy = dying.y + (H * 0.48 - dying.y) * e;
       ctx.save();
-      ctx.translate(cx + (p >= 1 ? Math.sin(t * 1.7) * 6 : 0), cy);
+      ctx.translate(cx, cy);
       ctx.rotate(Math.sin(t * 0.28) * 0.16 * e);
       drawFace(foeImg, '👹', 0, 0, size, foeCut);
       ctx.restore();
