@@ -263,7 +263,7 @@
   function loop() {
     if (running) step();
     draw();
-    if (dying && ++dying.t > 130) showMenu();
+    if (dying) dying.t++;
     requestAnimationFrame(loop);
   }
 
@@ -275,7 +275,8 @@
   }
   canvas.addEventListener('pointerdown', e => { if (target) setTarget(e.clientX, e.clientY); canvas.setPointerCapture(e.pointerId); });
   canvas.addEventListener('pointermove', e => { if (running && e.buttons !== 0 || e.pointerType === 'touch') setTarget(e.clientX, e.clientY); else if (running && e.pointerType === 'mouse') setTarget(e.clientX, e.clientY); });
-  addEventListener('keydown', e => { keys[e.key] = true; });
+  canvas.addEventListener('pointerdown', () => { if (dying && dying.t > 40) showMenu(); });
+  addEventListener('keydown', e => { keys[e.key] = true; if (dying && dying.t > 40) showMenu(); });
   addEventListener('keyup', e => { keys[e.key] = false; });
 
   $('start').addEventListener('click', () => {
